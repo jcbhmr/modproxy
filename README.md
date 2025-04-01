@@ -1,2 +1,19 @@
-# modproxy
-⏩ Basic Go module proxy interface &amp; multiplexer
+# `ModProxier` & `ModProxyMux`
+
+⏩ Basic Go module proxy interface & multiplexer
+
+## Installation
+
+```sh
+go get github.com/jcbhmr/modproxy
+```
+
+## Usage
+
+TODO
+
+## Development
+
+```sh
+go test -v ./...
+```
