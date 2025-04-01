@@ -1,4 +1,4 @@
-# `ModProxier` & `ModProxyMux`
+# Module proxy for Go
 
 ⏩ Basic Go module proxy interface & multiplexer
 
