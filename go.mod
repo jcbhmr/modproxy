@@ -1,4 +1,4 @@
-module github.com/jcbhmr/modproxy
+module github.com/jcbhmr/xmod
 
 go 1.24.1
 
