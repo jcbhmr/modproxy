@@ -2,7 +2,7 @@ package proxy
 
 import "time"
 
-// TODO: Add more fields?
+// TODO: Which fields should be included?
 // https://pkg.go.dev/cmd/go/internal/modfetch#RevInfo
 // https://pkg.go.dev/cmd/go/internal/modfetch/codehost#RevInfo
 

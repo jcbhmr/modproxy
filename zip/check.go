@@ -12,8 +12,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/jcbhmr/xmod/internal/xfs"
-	"github.com/jcbhmr/xmod/internal/xio"
+	"github.com/jcbhmr/xmod/internal/readerat"
 	"golang.org/x/mod/module"
 	modzip "golang.org/x/mod/zip"
 )
@@ -60,9 +59,9 @@ func checkZip(m module.Version, f fs.File) (*zip.Reader, modzip.CheckedFiles, er
 	if ra2, ok := f.(io.ReaderAt); ok {
 		ra = ra2
 	} else if rs, ok := f.(io.ReadSeeker); ok {
-		ra = xio.NewSeekingReaderAt(rs)
+		ra = &readerat.SeekingReaderAt{R: rs}
 	} else {
-		ra = xio.NewBufferedReaderAt(f)
+		ra = &readerat.BufferedReaderAt{R: f}
 	}
 	z, err := zip.NewReader(ra, zipSize)
 	if err != nil {
@@ -264,7 +263,7 @@ func listFilesInDirFS(fsys fs.FS, dir string) (files []modzip.File, omitted []mo
 			}
 
 			// Skip submodules (directories containing go.mod files).
-			if goModInfo, err := xfs.Lstat(fsys, path.Join(filePath, "go.mod")); err == nil && !goModInfo.IsDir() {
+			if goModInfo, err := lstat(fsys, path.Join(filePath, "go.mod")); err == nil && !goModInfo.IsDir() {
 				omitted = append(omitted, modzip.FileError{Path: slashPath, Err: errSubmoduleDir})
 				return fs.SkipDir
 			}
@@ -327,4 +326,17 @@ func isVendoredPackage(name string) bool {
 		return false
 	}
 	return strings.Contains(name[i:], "/")
+}
+
+type readLinkFS interface {
+	fs.FS
+	ReadLink(name string) (string, error)
+	Lstat(name string) (fs.FileInfo, error)
+}
+
+func lstat(fsys fs.FS, name string) (fs.FileInfo, error) {
+	if rlfs, ok := fsys.(readLinkFS); ok {
+		return rlfs.Lstat(name)
+	}
+	return fs.Stat(fsys, name)
 }

@@ -10,6 +10,35 @@ import (
 	"golang.org/x/mod/zip"
 )
 
+func Files(fsys fs.FS) (files []zip.File, err error) {
+	err = fs.WalkDir(fsys, ".", func(name string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() {
+			return nil
+		}
+		files = append(files, &entryWrapper{fsys: fsys, path: name})
+		return nil
+	})
+	return
+}
+
+type entryWrapper struct {
+	fsys fs.FS
+	path string
+}
+
+func (ew *entryWrapper) Path() string {
+	return ew.path
+}
+func (ew *entryWrapper) Lstat() (fs.FileInfo, error) {
+	return lstat(ew.fsys, ew.path)
+}
+func (ew *entryWrapper) Open() (io.ReadCloser, error) {
+	return ew.fsys.Open(ew.path)
+}
+
 type fileGroup map[string]zip.File
 
 func FS(files ...zip.File) fs.FS {

@@ -124,7 +124,7 @@ func NewServer(ops ServerOps) *Server {
 		version, _ := url.PathUnescape(r.PathValue("version"))
 		w.Header().Set("Content-Type", "application/zip")
 		w.WriteHeader(http.StatusOK)
-		sw := &sizeWriter{Writer: w}
+		sw := &sizeWriter{W: w}
 		err := s.ops.Zip(r.Context(), sw, module.Version{Path: path, Version: version})
 		if sw.Size == 0 {
 			if errors.Is(err, fs.ErrNotExist) {
@@ -154,13 +154,13 @@ func NewServer(ops ServerOps) *Server {
 }
 
 type sizeWriter struct {
-	io.Writer
+	W    io.Writer
 	Size int64
 }
 
-func (w *sizeWriter) Write(p []byte) (int, error) {
-	n, err := w.Writer.Write(p)
-	w.Size += int64(n)
+func (sw *sizeWriter) Write(p []byte) (int, error) {
+	n, err := sw.W.Write(p)
+	sw.Size += int64(n)
 	return n, err
 }
 
