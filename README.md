@@ -2,14 +2,10 @@
 
 🆕 Extensions to the [golang.org/x/mod](https://pkg.go.dev/golang.org/x/mod) module
 
-<table align=center><td>
-
 - **gomodzip:** Create & read Go module zip files CLI
 - **gomodproxy:** Basic Go module proxy server CLI
 - **proxy:** Go module proxy client & server interfaces
 - **zip:** Additional io/fs.FS interface support for the existing x/mod/zip package
-
-</table>
 
 ## Installation
 
